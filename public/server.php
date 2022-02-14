@@ -7,11 +7,15 @@ class Server {
     {
         $postParams = $_REQUEST;
 
-        require(__DIR__ . '/controller/' . $_REQUEST['CONTROLLER']);
+        $controllerFound = (bool) preg_match("#/([\w]+)\?#", $_SERVER["REQUEST_URI"], $match);
 
-        $className = str_replace(".php", "", $_REQUEST['CONTROLLER']);
+        $controllerName = $match[1] ?? "index";
 
-        $controller = new $className();
+        $controllerClassName = ucfirst($controllerName) . "Controller";
+
+        require(__DIR__ . '/controller/' . $controllerClassName . ".php");
+
+        $controller = new $controllerClassName();
 
         $controller->run($postParams);
     }
